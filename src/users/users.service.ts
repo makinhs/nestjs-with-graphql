@@ -1,27 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  create(createUserInput: CreateUserInput): User {
-    return { exampleField: createUserInput.exampleField };
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  async create(createUserInput: CreateUserInput): Promise<User> {
+    const user = this.userRepository.create(createUserInput);
+    return await this.userRepository.save(user);
   }
 
-  findAll(): [User] {
-    return [{ exampleField: 1 }];
+  async findAll(): Promise<Array<User>> {
+    return await this.userRepository.find();
   }
 
-  findOne(id: number): User {
-    return { exampleField: id };
+  async findOne(userId: string): Promise<User> {
+    const user = await this.userRepository.findOne(userId);
+    if (!user) {
+      throw new NotFoundException(`User #${userId} not found`);
+    }
+    return user;
   }
 
-  update(id: number, updateUserInput: UpdateUserInput): User {
-    return { exampleField: updateUserInput.id };
+  async update(
+    userId: string,
+    updateUserInput: UpdateUserInput,
+  ): Promise<User> {
+    const user = await this.userRepository.preload({
+      userId: userId,
+      ...updateUserInput,
+    });
+    if (!user) {
+      throw new NotFoundException(`User #${userId} not found`);
+    }
+    return this.userRepository.save(user);
   }
 
-  remove(id: number): User {
-    return { exampleField: id };
+  async remove(userId: string): Promise<User> {
+    const user = await this.findOne(userId);
+    await this.userRepository.remove(user);
+    return user;
   }
 }
