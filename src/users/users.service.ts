@@ -46,6 +46,13 @@ export class UsersService {
   async remove(userId: string): Promise<User> {
     const user = await this.findOne(userId);
     await this.userRepository.remove(user);
-    return user;
+    return {
+      userId: userId,
+      firstName: '',
+      lastName: '',
+      email: '',
+      role: '',
+      exampleField: 0,
+    };
   }
 }
