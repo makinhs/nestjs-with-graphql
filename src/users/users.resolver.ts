@@ -1,8 +1,14 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { ListUsersInput } from './dto/list-users.input';
+import ConnectionArgs, {
+  getPagingParameters,
+} from '../common/relay/connection.args';
+import { connectionFromArraySlice } from 'graphql-relay';
+import { ListUsersResponse } from './dto/list.users.response';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -14,22 +20,39 @@ export class UsersResolver {
   }
 
   @Query(() => [User], { name: 'users' })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Args('listUsersInput') listUsersInput: ListUsersInput) {
+    return this.usersService.findAll(listUsersInput);
+  }
+
+  @Query(() => ListUsersResponse, { name: 'listUsersWithCursor' })
+  async findAllWithCursor(
+    @Args('args') args: ConnectionArgs,
+  ): Promise<ListUsersResponse> {
+    const { limit, offset } = getPagingParameters(args);
+    const { users, count } = await this.usersService.getUsers({
+      limit,
+      offset,
+    });
+    const page = connectionFromArraySlice(users, args, {
+      arrayLength: count,
+      sliceStart: offset || 0,
+    });
+
+    return { page, pageData: { count, limit, offset } };
   }
 
   @Query(() => User, { name: 'user' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('_id', { type: () => String }) id: string) {
     return this.usersService.findOne(id);
   }
 
   @Mutation(() => User)
   updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-    return this.usersService.update(updateUserInput.id, updateUserInput);
+    return this.usersService.update(updateUserInput._id, updateUserInput);
   }
 
   @Mutation(() => User)
-  removeUser(@Args('id', { type: () => Int }) id: number) {
+  removeUser(@Args('_id', { type: () => String }) id: string) {
     return this.usersService.remove(id);
   }
 }
