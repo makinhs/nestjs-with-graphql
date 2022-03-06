@@ -49,7 +49,7 @@ jobs:
     name: Running test coverage
     needs: setup-env
     environment: Testing
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     container:
       image: node:14
     defaults:
