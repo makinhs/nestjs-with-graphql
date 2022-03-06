@@ -53,6 +53,7 @@ export function getPagingParameters(args: ConnectionArgs) {
     case 'backward': {
       const { last, before } = meta;
       let limit = last;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       let offset = getId(before!) - last;
 
       if (offset < 0) {

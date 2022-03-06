@@ -3,7 +3,6 @@ import { UsersResolver } from './users.resolver';
 import { UsersService } from './users.service';
 import * as Chance from 'chance';
 import { CreateUserInput } from './dto/create-user.input';
-import { User } from './entities/user.entity';
 import * as mongoose from 'mongoose';
 import { ListUsersInput } from './dto/list-users.input';
 import { UpdateUserInput } from './dto/update-user.input';
