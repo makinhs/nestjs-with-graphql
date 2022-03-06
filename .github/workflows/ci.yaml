@@ -1,0 +1,85 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - closed
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MONGODB_URI: mongodb://mongo:27017/medium-db
+
+jobs:
+  setup-env:
+    name: Setup Env
+    runs-on: ubuntu-latest
+    container:
+      image: node:14
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      output1: ${{ steps.step1.outputs.test }}
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v2
+
+      - name: Get yarn cache directory path
+        run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.YARN_CACHE_DIR }}
+          key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ github.repository }}-${{ runner.os }}-yarn-
+
+      - name: Install node dependencies to populate cache
+        run: yarn install
+
+  test-cov:
+    name: Running test coverage
+    needs: setup-env
+    environment: Testing
+    runs-on: [self-hosted, linux, testing]
+    container:
+      image: node:14
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v2
+
+      - name: Get yarn cache directory path
+        run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        id: yarn-cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.YARN_CACHE_DIR }}
+          key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ github.repository }}-${{ runner.os }}-yarn-
+
+      - name: All Secrets to env
+        uses: Firenza/secrets-to-env@v1.1.0
+        with:
+          secrets: ${{ toJSON(secrets) }}
+
+      - name: Install node dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 'Running test coverage'
+        run: |
+          yarn run test:cov
