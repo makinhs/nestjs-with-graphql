@@ -18,7 +18,7 @@ env:
 
 jobs:
   setup-env:
-    name: Setup Env
+    name: Setup environment
     runs-on: ubuntu-latest
     container:
       image: node:14
@@ -49,7 +49,7 @@ jobs:
     name: Running test coverage
     needs: setup-env
     environment: Testing
-    runs-on: [self-hosted, linux, testing]
+    runs-on: ubuntu-20.04
     container:
       image: node:14
     defaults:
