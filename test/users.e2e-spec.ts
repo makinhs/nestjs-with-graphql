@@ -29,7 +29,7 @@ import {
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
-describe('AppController (e2e)', () => {
+describe('Users resolver (e2e)', () => {
   let app: INestApplication;
   let user: User;
 
