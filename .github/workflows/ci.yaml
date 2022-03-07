@@ -125,7 +125,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get update && apt-get -y install netcat-openbsd
           timeout 20 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' mongo 27017
 
-      - name: All Secrets to env
+      - name: add .env variables
         uses: Firenza/secrets-to-env@v1.1.0
         with:
           secrets: ${{ toJSON(secrets) }}
