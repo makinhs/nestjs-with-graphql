@@ -1,7 +1,5 @@
 import * as Chance from 'chance';
 
-const chance = new Chance();
-
 export const UPDATE_USER_OPERATION_NAME = 'UpdateUser';
 
 export const UPDATE_USER_MUTATION = `mutation UpdateUser($updateUserInput:UpdateUserInput!){
