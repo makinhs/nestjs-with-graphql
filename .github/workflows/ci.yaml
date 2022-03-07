@@ -14,7 +14,7 @@ on:
 env:
   IMAGE_TAG: ${{ github.sha }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  MONGODB_URI: mongodb://mongo:27017/medium-db
+  MONGODB_URL: mongodb://mongo:27017/medium-db
 
 jobs:
   setup-env:
@@ -83,3 +83,55 @@ jobs:
       - name: 'Running test coverage'
         run: |
           yarn run test:cov
+
+  test-e2e:
+    name: Running e2e tests
+    needs: setup-env
+    environment: Testing
+    runs-on: ubuntu-latest
+    container:
+      image: node:14
+    defaults:
+      run:
+        shell: bash
+    services:
+      mongo:
+        image: mongo:4.4.7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd mongo
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v2
+
+      - name: Get yarn cache directory path
+        run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        id: yarn-cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.YARN_CACHE_DIR }}
+          key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ github.repository }}-${{ runner.os }}-yarn-
+
+      - name: Check Service Availability
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt-get update && apt-get -y install netcat-openbsd
+          timeout 20 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' mongo 27017
+
+      - name: All Secrets to env
+        uses: Firenza/secrets-to-env@v1.1.0
+        with:
+          secrets: ${{ toJSON(secrets) }}
+
+      - name: Install node dependencies
+        run: yarn install
+
+      - name: 'Running e2e tests'
+        run: yarn run test:e2e
