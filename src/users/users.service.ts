@@ -1,19 +1,31 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ListUsersInput } from './dto/list-users.input';
+import * as argon2 from 'argon2';
+import { LoginUserInput } from './dto/login-user.input';
+import { AuthService } from '../common/services/auth.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
   ) {}
 
-  create(createUserInput: CreateUserInput) {
+  async create(createUserInput: CreateUserInput) {
+    createUserInput.password = await argon2.hash(createUserInput.password);
     const user = new this.userModel(createUserInput);
     return user.save();
   }
@@ -51,5 +63,25 @@ export class UsersService {
     const count = await this.userModel.count();
     const users = await this.findAll(paginationQuery);
     return { users, count };
+  }
+
+  async findOneByEmail(email: string) {
+    const user = await this.userModel.findOne({ email: email }).exec();
+    if (!user) {
+      throw new NotFoundException(`User ${email} not found`);
+    }
+    return user;
+  }
+
+  async loginUser(loginUserInput: LoginUserInput) {
+    const user = await this.authService.validateUser(
+      loginUserInput.email,
+      loginUserInput.password,
+    );
+    if (!user) {
+      throw new BadRequestException(`Email or password are invalid`);
+    } else {
+      return this.authService.loginWithCredentials(user);
+    }
   }
 }

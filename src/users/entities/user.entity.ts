@@ -17,6 +17,8 @@ export class User {
   @Field(() => String, { description: 'User email ' })
   email: string;
   @Prop()
+  password: string;
+  @Prop()
   @Field(() => String, { description: 'User role' })
   role: string;
 }

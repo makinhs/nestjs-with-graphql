@@ -54,6 +54,13 @@ type UserPageInfo {
   hasNextPage: Boolean!
 }
 
+type LoggedUserOutput {
+  """
+  Generated access_token of the user
+  """
+  access_token: String!
+}
+
 type Query {
   users(listUsersInput: ListUsersInput!): [User!]!
   listUsersWithCursor(args: ConnectionArgs!): ListUsersResponse!
@@ -98,6 +105,7 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(_id: String!): User!
+  loginUser(loginUserInput: LoginUserInput!): LoggedUserOutput!
 }
 
 input CreateUserInput {
@@ -120,6 +128,11 @@ input CreateUserInput {
   role of the user
   """
   role: String!
+
+  """
+  password of the user
+  """
+  password: String!
 }
 
 input UpdateUserInput {
@@ -142,5 +155,22 @@ input UpdateUserInput {
   role of the user
   """
   role: String
+
+  """
+  password of the user
+  """
+  password: String
   _id: String!
+}
+
+input LoginUserInput {
+  """
+  email of the user
+  """
+  email: String!
+
+  """
+  password of the user
+  """
+  password: String!
 }

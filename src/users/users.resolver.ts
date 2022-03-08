@@ -9,6 +9,8 @@ import ConnectionArgs, {
 } from '../common/relay/connection.args';
 import { connectionFromArraySlice } from 'graphql-relay';
 import { ListUsersResponse } from './dto/list.users.response';
+import { LoginUserInput } from './dto/login-user.input';
+import { LoggedUserOutput } from './dto/logged-user.output';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -54,5 +56,9 @@ export class UsersResolver {
   @Mutation(() => User)
   removeUser(@Args('_id', { type: () => String }) id: string) {
     return this.usersService.remove(id);
+  }
+  @Mutation(() => LoggedUserOutput)
+  loginUser(@Args('loginUserInput') loginUserInput: LoginUserInput) {
+    return this.usersService.loginUser(loginUserInput);
   }
 }

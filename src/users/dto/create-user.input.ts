@@ -10,4 +10,6 @@ export class CreateUserInput {
   email: string;
   @Field(() => String, { description: 'role of the user' })
   role: string;
+  @Field(() => String, { description: 'password of the user' })
+  password: string;
 }
