@@ -20,7 +20,6 @@ export class UsersService {
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
-    @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
   ) {}
 
