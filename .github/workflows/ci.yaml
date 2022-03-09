@@ -81,7 +81,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Install argon2 dependencies
-        run: yarn add install argon2 --build-from-source
+        run: yarn global add node-pre-gyp && yarn add argon2 --ignore-scripts $ node-gyp rebuild -C ./node_modules/argon2
 
       - name: 'Running test coverage'
         run: |
@@ -137,7 +137,7 @@ jobs:
         run: yarn install
 
       - name: Install argon2 dependencies
-        run: yarn add install argon2 --build-from-source
+        run: yarn global add node-pre-gyp && yarn add argon2 --ignore-scripts $ node-gyp rebuild -C ./node_modules/argon2
 
       - name: 'Running e2e tests'
         run: yarn run test:e2e
