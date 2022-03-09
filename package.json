@@ -96,6 +96,7 @@
       "!main.(t|j)s",
       "!**/*.module.(t|j)s",
       "!**/*.input.(t|j)s",
+      "!**/*.output.(t|j)s",
       "!**/*.entity.(t|j)s",
       "!**/*.args.(t|j)s",
       "!**/*.helper.(t|j)s",

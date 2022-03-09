@@ -6,6 +6,7 @@ import { CreateUserInput } from './dto/create-user.input';
 import * as mongoose from 'mongoose';
 import { ListUsersInput } from './dto/list-users.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { LoginUserInput } from './dto/login-user.input';
 
 const USER_ROLE = 'User';
 const chance = new Chance();
@@ -13,6 +14,7 @@ const createUserInput: CreateUserInput = {
   firstName: chance.first(),
   lastName: chance.last(),
   email: chance.email(),
+  password: chance.string({ length: 15 }),
   role: USER_ROLE,
 };
 const userId = new mongoose.Types.ObjectId();
@@ -73,6 +75,9 @@ describe('UsersResolver', () => {
             remove: jest.fn(() => {
               return {};
             }),
+            loginUser: jest.fn(() => {
+              return { access_token: '' };
+            }),
           },
         },
       ],
@@ -121,6 +126,16 @@ describe('UsersResolver', () => {
     expect(updatedUser.firstName).toBe(updateUserInput.firstName);
     expect(updatedUser.lastName).toBe(updateUserInput.lastName);
   });
+
+  it('should be able generate an access token', async () => {
+    const loginUserInput: LoginUserInput = {
+      email: createUserInput.email,
+      password: createUserInput.password,
+    };
+    const { access_token } = await resolver.loginUser(loginUserInput);
+    expect(access_token).toBeDefined();
+  });
+
   it('should be able to test removeUser ', async () => {
     const removedUser = await resolver.removeUser(userId.toString());
     expect(removedUser).toBeDefined();

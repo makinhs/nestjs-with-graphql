@@ -10,6 +10,8 @@ import {
 } from '../common/helpers/mongoose.helper';
 import { ListUsersInput } from './dto/list-users.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { AuthService } from '../common/services/auth.service';
+import { LoginUserInput } from './dto/login-user.input';
 
 const USER_ROLE = 'User';
 const chance = new Chance();
@@ -17,6 +19,7 @@ const createUserInput: CreateUserInput = {
   firstName: chance.first(),
   lastName: chance.last(),
   email: chance.email(),
+  password: chance.string({ length: 15 }),
   role: USER_ROLE,
 };
 let userId = '';
@@ -42,7 +45,27 @@ describe('UsersService', () => {
           },
         ]),
       ],
-      providers: [UsersService],
+      providers: [
+        UsersService,
+        {
+          provide: AuthService,
+          useValue: {
+            validateUser: jest.fn((email, password) => {
+              if (
+                email !== createUserInput.email ||
+                password !== createUserInput.password
+              ) {
+                return null;
+              } else {
+                return createUserInput;
+              }
+            }),
+            generateUserCredentials: jest.fn(() => {
+              return { access_token: '' };
+            }),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
@@ -105,9 +128,25 @@ describe('UsersService', () => {
     expect(updatedUser.lastName).not.toBe(createUserInput.lastName);
   });
 
+  it('should be able to find one by email', async () => {
+    const user = await service.findOneByEmail(createUserInput.email);
+    expect(user).toBeDefined();
+    expect(user.email).toBe(createUserInput.email);
+  });
+
   it('should delete the testing user', async () => {
     const deletedUser = await service.remove(userId);
     expect(deletedUser).toBeDefined();
+  });
+
+  it('should not be able to find one by email', async () => {
+    try {
+      await service.findOneByEmail(createUserInput.email);
+    } catch (err) {
+      expect(err).toBeDefined();
+      expect(err.response).toBeDefined();
+      expect(err.response.statusCode).toBe(404);
+    }
   });
 
   it('should receive not found error for getting the deleted user', async () => {
@@ -127,6 +166,28 @@ describe('UsersService', () => {
       expect(err).toBeDefined();
       expect(err.response).toBeDefined();
       expect(err.response.statusCode).toBe(404);
+    }
+  });
+
+  it('should be able to generate an access token', async () => {
+    const loginUserInput: LoginUserInput = {
+      email: createUserInput.email,
+      password: createUserInput.password,
+    };
+    const { access_token } = await service.loginUser(loginUserInput);
+    expect(access_token).toBeDefined();
+  });
+  it('should not be able to generate an access token', async () => {
+    const loginUserInput: LoginUserInput = {
+      email: chance.email(),
+      password: createUserInput.password,
+    };
+    try {
+      await service.loginUser(loginUserInput);
+    } catch (err) {
+      expect(err).toBeDefined();
+      expect(err.response).toBeDefined();
+      expect(err.response.statusCode).toBe(400);
     }
   });
 });
