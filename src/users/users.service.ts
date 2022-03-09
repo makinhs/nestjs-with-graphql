@@ -78,7 +78,7 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException(`Email or password are invalid`);
     } else {
-      return this.authService.loginWithCredentials(user);
+      return this.authService.generateUserCredentials(user);
     }
   }
 }
