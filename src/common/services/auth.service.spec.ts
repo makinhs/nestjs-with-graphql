@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UsersService } from '../../users/users.service';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import * as Chance from 'chance';
 import { User } from '../../users/entities/user.entity';
 import * as argon2 from 'argon2';
 
 const chance = new Chance();
 const USER_ROLE = 'User';
-const JWT_SECRET = chance.string({ length: 15 });
+
 const user: User = {
   _id: chance.string({ length: 15 }),
   email: chance.email(),
