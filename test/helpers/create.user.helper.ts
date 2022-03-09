@@ -1,4 +1,5 @@
 import * as Chance from 'chance';
+
 const chance = new Chance();
 const userRole = 'User';
 
@@ -20,6 +21,7 @@ export const generateCreateUserVariables = (role = userRole) => {
       firstName: chance.first(),
       lastName: chance.last(),
       email: chance.email(),
+      password: chance.string({ length: 15 }),
       role: role,
     },
   };
