@@ -10,7 +10,7 @@ import {
 } from '../common/helpers/mongoose.helper';
 import { ListUsersInput } from './dto/list-users.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { AuthService } from '../common/services/auth.service';
+import { AuthService } from '../common/auth/services/auth.service';
 import { LoginUserInput } from './dto/login-user.input';
 
 const USER_ROLE = 'User';

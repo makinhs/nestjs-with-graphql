@@ -103,6 +103,8 @@
       "!**/*.types.(t|j)s",
       "!**/*.entities.(t|j)s",
       "!**/*.helpers.(t|j)s",
+      "!**/*.guard.(t|j)s",
+      "!**/*.interceptor.(t|j)s",
       "!**/node_modules/**"
     ],
     "coverageDirectory": "../coverage",

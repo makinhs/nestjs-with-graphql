@@ -10,7 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ListUsersInput } from './dto/list-users.input';
 import { LoginUserInput } from './dto/login-user.input';
-import { AuthService } from '../common/services/auth.service';
+import { AuthService } from '../common/auth/services/auth.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()

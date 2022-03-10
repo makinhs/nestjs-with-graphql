@@ -26,12 +26,19 @@ import {
   DELETE_USER_MUTATION,
   DELETE_USER_OPERATION_NAME,
 } from './helpers/delete.user.helper';
+import {
+  generateLoginUserVariables,
+  LOGIN_USER_MUTATION,
+  LOGIN_USER_OPERATION_NAME,
+} from './helpers/login.user.helper';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
 describe('Users resolver (e2e)', () => {
   let app: INestApplication;
   let user: User;
+  let BEARER_JWT;
+  let user_password;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -48,6 +55,7 @@ describe('Users resolver (e2e)', () => {
 
   it('Should create an user with user mutation', () => {
     const createUserInput = generateCreateUserVariables().createUserInput;
+    user_password = createUserInput.password;
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
@@ -63,6 +71,22 @@ describe('Users resolver (e2e)', () => {
         expect(user.firstName).toBe(createUserInput.firstName);
         expect(user.lastName).toBe(createUserInput.lastName);
         expect(user.role).toBe(createUserInput.role);
+      });
+  });
+
+  it('Should login the new user with login user mutation', () => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        operationName: LOGIN_USER_OPERATION_NAME,
+        query: LOGIN_USER_MUTATION,
+        variables: generateLoginUserVariables(user.email, user_password),
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.data.loginUser).toBeDefined();
+        expect(res.body.data.loginUser.access_token).toBeDefined();
+        BEARER_JWT = `Bearer ${res.body.data.loginUser.access_token}`;
       });
   });
 
@@ -96,6 +120,7 @@ describe('Users resolver (e2e)', () => {
     ).updateUserInput;
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
+      .set('Authorization', BEARER_JWT)
       .send({
         operationName: UPDATE_USER_OPERATION_NAME,
         query: UPDATE_USER_MUTATION,
@@ -113,9 +138,35 @@ describe('Users resolver (e2e)', () => {
       });
   });
 
+  it('Should not be able to update an user with different id', () => {
+    const updatedFirstName = 'John';
+    const updatedLastName = 'Doe';
+    const updateUserInput = generateUpdateUserVariables(
+      'fake_id_here',
+      updatedFirstName,
+      updatedLastName,
+      user.email,
+      user.role,
+    ).updateUserInput;
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .set('Authorization', BEARER_JWT)
+      .send({
+        operationName: UPDATE_USER_OPERATION_NAME,
+        query: UPDATE_USER_MUTATION,
+        variables: { updateUserInput },
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.errors).toBeDefined();
+        expect(res.body.errors.length).toBe(1);
+      });
+  });
+
   it('Should list users with cursor', () => {
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
+      .set('Authorization', BEARER_JWT)
       .send({
         operationName: GET_USERS_OPERATION_NAME,
         query: GET_USERS_QUERY,
@@ -140,6 +191,7 @@ describe('Users resolver (e2e)', () => {
   it('Should remove our testing user by id', () => {
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
+      .set('Authorization', BEARER_JWT)
       .send({
         operationName: DELETE_USER_OPERATION_NAME,
         query: DELETE_USER_MUTATION,
@@ -156,6 +208,7 @@ describe('Users resolver (e2e)', () => {
   it('Should not be able to get the user after it was deleted', () => {
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
+      .set('Authorization', BEARER_JWT)
       .send({
         operationName: GET_USER_OPERATION_NAME,
         query: GET_USER_QUERY,

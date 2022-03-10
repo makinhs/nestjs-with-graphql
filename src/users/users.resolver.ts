@@ -11,6 +11,9 @@ import { connectionFromArraySlice } from 'graphql-relay';
 import { ListUsersResponse } from './dto/list.users.response';
 import { LoginUserInput } from './dto/login-user.input';
 import { LoggedUserOutput } from './dto/logged-user.output';
+import { JwtAuthGuard } from '../common/auth/jwt-auth.guard';
+import { UseGuards, UseInterceptors } from '@nestjs/common';
+import { OnlySameUserByIdAllowed } from '../common/interceptors/users.interceptor';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -21,11 +24,13 @@ export class UsersResolver {
     return this.usersService.create(createUserInput);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Query(() => [User], { name: 'users' })
   findAll(@Args('listUsersInput') listUsersInput: ListUsersInput) {
     return this.usersService.findAll(listUsersInput);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Query(() => ListUsersResponse, { name: 'listUsersWithCursor' })
   async findAllWithCursor(
     @Args('args') args: ConnectionArgs,
@@ -48,11 +53,14 @@ export class UsersResolver {
     return this.usersService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(OnlySameUserByIdAllowed)
   @Mutation(() => User)
   updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
     return this.usersService.update(updateUserInput._id, updateUserInput);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => User)
   removeUser(@Args('_id', { type: () => String }) id: string) {
     return this.usersService.remove(id);
