@@ -40,7 +40,7 @@ describe('Users resolver (e2e)', () => {
   let BEARER_JWT;
   let user_password;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -49,7 +49,7 @@ describe('Users resolver (e2e)', () => {
     await app.init();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 
