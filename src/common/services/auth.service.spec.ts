@@ -4,7 +4,7 @@ import { UsersService } from '../../users/users.service';
 import { JwtModule } from '@nestjs/jwt';
 import * as Chance from 'chance';
 import { User } from '../../users/entities/user.entity';
-import * as argon2 from 'argon2';
+import * as bcrypt from 'bcrypt';
 
 const chance = new Chance();
 const USER_ROLE = 'User';
@@ -32,7 +32,12 @@ describe('AuthService', () => {
           useValue: {
             findOneByEmail: jest.fn(async (email) => {
               if (email) {
-                return { ...user, password: await argon2.hash(user.password) };
+                const saltOrRounds = 10;
+                const passwordHash = await bcrypt.hash(
+                  user.password,
+                  saltOrRounds,
+                );
+                return { ...user, password: passwordHash };
               } else {
                 return null;
               }

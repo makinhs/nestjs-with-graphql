@@ -1,8 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../../users/users.service';
-import * as argon2 from 'argon2';
 import { User } from '../../users/entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findOneByEmail(email);
     if (user) {
-      if (await argon2.verify(user.password, password)) {
+      if (await bcrypt.compare(password, user.password)) {
         delete user.password;
         return user;
       }

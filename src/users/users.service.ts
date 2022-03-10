@@ -1,7 +1,7 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -9,9 +9,9 @@ import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ListUsersInput } from './dto/list-users.input';
-import * as argon2 from 'argon2';
 import { LoginUserInput } from './dto/login-user.input';
 import { AuthService } from '../common/services/auth.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +22,9 @@ export class UsersService {
   ) {}
 
   async create(createUserInput: CreateUserInput) {
-    createUserInput.password = await argon2.hash(createUserInput.password);
+    const saltOrRounds = 10;
+    const password = createUserInput.password;
+    createUserInput.password = await bcrypt.hash(password, saltOrRounds);
     const user = new this.userModel(createUserInput);
     return user.save();
   }

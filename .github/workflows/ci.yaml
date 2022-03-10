@@ -80,9 +80,6 @@ jobs:
       - name: Install node dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Install argon2 dependencies
-        run: yarn add argon2 --build-from-source
-
       - name: 'Running test coverage'
         run: |
           yarn run test:cov
@@ -135,9 +132,6 @@ jobs:
 
       - name: Install node dependencies
         run: yarn install
-
-      - name: Install argon2 dependencies
-        run: yarn add argon2 --build-from-source
 
       - name: 'Running e2e tests'
         run: yarn run test:e2e
