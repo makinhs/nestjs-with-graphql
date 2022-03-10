@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtModule } from '@nestjs/jwt';
 import * as Chance from 'chance';
-import { User } from '../../../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy.service';
 
