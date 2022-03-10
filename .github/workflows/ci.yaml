@@ -15,6 +15,7 @@ env:
   IMAGE_TAG: ${{ github.sha }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MONGODB_URL: mongodb://mongo:27017/medium-db
+  JWT_SECRET: N4tS4f3!23
 
 jobs:
   setup-env:
