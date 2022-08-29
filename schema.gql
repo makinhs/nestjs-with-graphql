@@ -2,7 +2,31 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
+type address {
+  _id: String!
+
+  """
+  Street
+  """
+  street: String!
+
+  """
+  City
+  """
+  city: String!
+
+  """
+  State address
+  """
+  state: String!
+
+  """
+  ZIP address
+  """
+  zip: String!
+}
+
+type user {
   _id: String!
 
   """
@@ -24,6 +48,7 @@ type User {
   User role
   """
   role: String!
+  addresses: [address!]!
 }
 
 type PageDataDto {
@@ -44,7 +69,7 @@ type UserConnection {
 
 type UserEdge {
   cursor: String
-  node: User
+  node: user
 }
 
 type UserPageInfo {
@@ -62,9 +87,9 @@ type LoggedUserOutput {
 }
 
 type Query {
-  users(listUsersInput: ListUsersInput!): [User!]!
+  users(listUsersInput: ListUsersInput!): [user!]!
   listUsersWithCursor(args: ConnectionArgs!): ListUsersResponse!
-  user(_id: String!): User!
+  user(_id: String!): user!
 }
 
 input ListUsersInput {
@@ -102,9 +127,9 @@ input ConnectionArgs {
 }
 
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(_id: String!): User!
+  createUser(createUserInput: CreateUserInput!): user!
+  updateUser(updateUserInput: UpdateUserInput!): user!
+  removeUser(_id: String!): user!
   loginUser(loginUserInput: LoginUserInput!): LoggedUserOutput!
 }
 
@@ -133,6 +158,14 @@ input CreateUserInput {
   password of the user
   """
   password: String!
+  addresses: [Address!]!
+}
+
+input Address {
+  street: String!
+  city: String!
+  state: String!
+  zip: Float!
 }
 
 input UpdateUserInput {
@@ -160,6 +193,7 @@ input UpdateUserInput {
   password of the user
   """
   password: String
+  addresses: [Address!]
   _id: String!
 }
 

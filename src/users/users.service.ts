@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { Address } from './entities/address.entity';
 import { User } from './entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -18,6 +19,8 @@ export class UsersService {
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
+    @InjectModel(Address.name)
+    private readonly addressModel: Model<Address>,
     private readonly authService: AuthService,
   ) {}
 
@@ -25,7 +28,12 @@ export class UsersService {
     const saltOrRounds = 10;
     const password = createUserInput.password;
     createUserInput.password = await bcrypt.hash(password, saltOrRounds);
-    const user = new this.userModel(createUserInput);
+    let addresses = [];
+    createUserInput.addresses.forEach((address) => {
+      addresses.push(new this.addressModel(address).save());
+    });
+    addresses = await Promise.all(addresses);
+    const user = new this.userModel({ ...createUserInput, addresses });
     return user.save();
   }
 

@@ -1,6 +1,18 @@
 import { InputType, Field } from '@nestjs/graphql';
 
 @InputType()
+export class Address {
+  @Field(() => String)
+  street: string;
+  @Field(() => String)
+  city: string;
+  @Field(() => String)
+  state: string;
+  @Field(() => Number)
+  zip: number;
+}
+
+@InputType()
 export class CreateUserInput {
   @Field(() => String, { description: 'first name of the user' })
   firstName: string;
@@ -12,4 +24,6 @@ export class CreateUserInput {
   role: string;
   @Field(() => String, { description: 'password of the user' })
   password: string;
+  @Field(() => [Address])
+  addresses: Array<Address>;
 }
