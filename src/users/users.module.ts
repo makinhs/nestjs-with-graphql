@@ -6,6 +6,7 @@ import { User, UserSchema } from './entities/user.entity';
 import { Address, AddressSchema } from './entities/address.entity';
 import { CommonModule } from '../common/common.module';
 import { UsersAddressesResolver } from './users-addresses.resolver';
+import { AddressesFromUserLoader } from './data-loader/addresses-from-user.loader';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { UsersAddressesResolver } from './users-addresses.resolver';
       },
     ]),
   ],
-  providers: [UsersResolver, UsersService, UsersAddressesResolver],
+  providers: [UsersResolver, UsersService, UsersAddressesResolver, AddressesFromUserLoader],
   exports: [UsersService],
 })
 export class UsersModule {}

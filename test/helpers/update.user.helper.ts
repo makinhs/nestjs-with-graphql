@@ -10,13 +10,7 @@ export const UPDATE_USER_MUTATION = `mutation UpdateUser($updateUserInput:Update
   }
 }`;
 
-export const generateUpdateUserVariables = (
-  _id: string,
-  firstName = null,
-  lastName = null,
-  email = null,
-  role = null,
-) => {
+export const generateUpdateUserVariables = (_id: string, firstName = null, lastName = null, email = null, role = null) => {
   return {
     updateUserInput: {
       _id,

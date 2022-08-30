@@ -111,9 +111,7 @@ describe('UsersResolver', () => {
     const usersWithCursor = await resolver.findAllWithCursor(findAllArgs);
     expect(usersWithCursor.page.edges).toBeDefined();
     expect(usersWithCursor.page.edges[0].node).toBeDefined();
-    expect(usersWithCursor.page.edges[0].node.firstName).toBe(
-      createUserInput.firstName,
-    );
+    expect(usersWithCursor.page.edges[0].node.firstName).toBe(createUserInput.firstName);
   });
   it('should be able to find one user by id', async () => {
     const user = await resolver.findOne(userId.toString());

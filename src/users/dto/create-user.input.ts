@@ -8,8 +8,8 @@ export class Address {
   city: string;
   @Field(() => String)
   state: string;
-  @Field(() => Number)
-  zip: number;
+  @Field(() => String)
+  zip: string;
 }
 
 @InputType()

@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { Address } from './entities/address.entity';
@@ -51,9 +47,7 @@ export class UsersService {
   }
 
   async update(id: string, updateUserInput: UpdateUserInput) {
-    const existingUser = await this.userModel
-      .findOneAndUpdate({ _id: id }, { $set: updateUserInput }, { new: true })
-      .exec();
+    const existingUser = await this.userModel.findOneAndUpdate({ _id: id }, { $set: updateUserInput }, { new: true }).exec();
 
     if (!existingUser) {
       throw new NotFoundException(`User ${id} not found`);
@@ -81,10 +75,7 @@ export class UsersService {
   }
 
   async loginUser(loginUserInput: LoginUserInput) {
-    const user = await this.authService.validateUser(
-      loginUserInput.email,
-      loginUserInput.password,
-    );
+    const user = await this.authService.validateUser(loginUserInput.email, loginUserInput.password);
     if (!user) {
       throw new BadRequestException(`Email or password are invalid`);
     } else {

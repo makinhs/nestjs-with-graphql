@@ -32,6 +32,7 @@
     "@nestjs/platform-express": "^8.0.0",
     "apollo-server-express": "2.x.x",
     "bcrypt": "^5.0.1",
+    "dataloader": "^2.1.0",
     "graphql": "^15.4.0",
     "graphql-relay": "^0.10.0",
     "mongoose": "^6.2.3",

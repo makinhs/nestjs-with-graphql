@@ -4,9 +4,7 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { ListUsersInput } from './dto/list-users.input';
-import ConnectionArgs, {
-  getPagingParameters,
-} from '../common/relay/connection.args';
+import ConnectionArgs, { getPagingParameters } from '../common/relay/connection.args';
 import { connectionFromArraySlice } from 'graphql-relay';
 import { ListUsersResponse } from './dto/list.users.response';
 import { LoginUserInput } from './dto/login-user.input';
@@ -32,9 +30,7 @@ export class UsersResolver {
 
   @UseGuards(JwtAuthGuard)
   @Query(() => ListUsersResponse, { name: 'listUsersWithCursor' })
-  async findAllWithCursor(
-    @Args('args') args: ConnectionArgs,
-  ): Promise<ListUsersResponse> {
+  async findAllWithCursor(@Args('args') args: ConnectionArgs): Promise<ListUsersResponse> {
     const { limit, offset } = getPagingParameters(args);
     const { users, count } = await this.usersService.getUsers({
       limit,

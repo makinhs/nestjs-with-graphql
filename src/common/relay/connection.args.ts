@@ -1,14 +1,7 @@
-import {
-  ConnectionArguments,
-  ConnectionCursor,
-  fromGlobalId,
-} from 'graphql-relay';
+import { ConnectionArguments, ConnectionCursor, fromGlobalId } from 'graphql-relay';
 import { Field, InputType } from '@nestjs/graphql';
 
-type PagingMeta =
-  | { pagingType: 'forward'; after?: string; first: number }
-  | { pagingType: 'backward'; before?: string; last: number }
-  | { pagingType: 'none' };
+type PagingMeta = { pagingType: 'forward'; after?: string; first: number } | { pagingType: 'backward'; before?: string; last: number } | { pagingType: 'none' };
 
 function checkPagingSanity(args: ConnectionArgs): PagingMeta {
   const { first = 0, last = 0, after, before } = args;
@@ -29,15 +22,10 @@ function checkPagingSanity(args: ConnectionArgs): PagingMeta {
   }
 
   // eslint-disable-next-line no-nested-ternary
-  return isForwardPaging
-    ? { pagingType: 'forward', after, first }
-    : isBackwardPaging
-    ? { pagingType: 'backward', before, last }
-    : { pagingType: 'none' };
+  return isForwardPaging ? { pagingType: 'forward', after, first } : isBackwardPaging ? { pagingType: 'backward', before, last } : { pagingType: 'none' };
 }
 
-const getId = (cursor: ConnectionCursor) =>
-  parseInt(fromGlobalId(cursor).id, 10);
+const getId = (cursor: ConnectionCursor) => parseInt(fromGlobalId(cursor).id, 10);
 const nextId = (cursor: ConnectionCursor) => getId(cursor) + 1;
 
 export function getPagingParameters(args: ConnectionArgs) {

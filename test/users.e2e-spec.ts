@@ -2,35 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import {
-  CREATE_USER_MUTATION,
-  CREATE_USER_OPERATION_NAME,
-  generateCreateUserVariables,
-} from './helpers/create.user.helper';
+import { CREATE_USER_MUTATION, CREATE_USER_OPERATION_NAME, generateCreateUserVariables } from './helpers/create.user.helper';
 import { User } from '../src/users/entities/user.entity';
-import {
-  generateGetUserVariable,
-  GET_USER_OPERATION_NAME,
-  GET_USER_QUERY,
-} from './helpers/get.user.helper';
-import {
-  generateUpdateUserVariables,
-  UPDATE_USER_MUTATION,
-  UPDATE_USER_OPERATION_NAME,
-} from './helpers/update.user.helper';
-import {
-  GET_USERS_OPERATION_NAME,
-  GET_USERS_QUERY,
-} from './helpers/get.users.helper';
-import {
-  DELETE_USER_MUTATION,
-  DELETE_USER_OPERATION_NAME,
-} from './helpers/delete.user.helper';
-import {
-  generateLoginUserVariables,
-  LOGIN_USER_MUTATION,
-  LOGIN_USER_OPERATION_NAME,
-} from './helpers/login.user.helper';
+import { generateGetUserVariable, GET_USER_OPERATION_NAME, GET_USER_QUERY } from './helpers/get.user.helper';
+import { generateUpdateUserVariables, UPDATE_USER_MUTATION, UPDATE_USER_OPERATION_NAME } from './helpers/update.user.helper';
+import { GET_USERS_OPERATION_NAME, GET_USERS_QUERY } from './helpers/get.users.helper';
+import { DELETE_USER_MUTATION, DELETE_USER_OPERATION_NAME } from './helpers/delete.user.helper';
+import { generateLoginUserVariables, LOGIN_USER_MUTATION, LOGIN_USER_OPERATION_NAME } from './helpers/login.user.helper';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -111,13 +89,7 @@ describe('Users resolver (e2e)', () => {
   it('Should update the user', () => {
     const updatedFirstName = 'John';
     const updatedLastName = 'Doe';
-    const updateUserInput = generateUpdateUserVariables(
-      <string>user._id,
-      updatedFirstName,
-      updatedLastName,
-      user.email,
-      user.role,
-    ).updateUserInput;
+    const updateUserInput = generateUpdateUserVariables(<string>user._id, updatedFirstName, updatedLastName, user.email, user.role).updateUserInput;
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .set('Authorization', BEARER_JWT)
@@ -141,13 +113,7 @@ describe('Users resolver (e2e)', () => {
   it('Should not be able to update an user with different id', () => {
     const updatedFirstName = 'John';
     const updatedLastName = 'Doe';
-    const updateUserInput = generateUpdateUserVariables(
-      'fake_id_here',
-      updatedFirstName,
-      updatedLastName,
-      user.email,
-      user.role,
-    ).updateUserInput;
+    const updateUserInput = generateUpdateUserVariables('fake_id_here', updatedFirstName, updatedLastName, user.email, user.role).updateUserInput;
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .set('Authorization', BEARER_JWT)

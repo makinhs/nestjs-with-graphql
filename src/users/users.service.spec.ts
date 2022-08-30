@@ -4,10 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CreateUserInput } from './dto/create-user.input';
 import * as Chance from 'chance';
 import { User, UserSchema } from './entities/user.entity';
-import {
-  closeInMongodConnection,
-  rootMongooseTestModule,
-} from '../common/helpers/mongoose.helper';
+import { closeInMongodConnection, rootMongooseTestModule } from '../common/helpers/mongoose.helper';
 import { ListUsersInput } from './dto/list-users.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { AuthService } from '../common/auth/services/auth.service';
@@ -21,6 +18,14 @@ const createUserInput: CreateUserInput = {
   email: chance.email(),
   password: chance.string({ length: 15 }),
   role: USER_ROLE,
+  addresses: [
+    {
+      city: chance.city(),
+      street: chance.street(),
+      state: chance.state(),
+      zip: chance.zip(),
+    },
+  ],
 };
 let userId = '';
 
@@ -51,10 +56,7 @@ describe('UsersService', () => {
           provide: AuthService,
           useValue: {
             validateUser: jest.fn((email, password) => {
-              if (
-                email !== createUserInput.email ||
-                password !== createUserInput.password
-              ) {
+              if (email !== createUserInput.email || password !== createUserInput.password) {
                 return null;
               } else {
                 return createUserInput;
@@ -117,10 +119,7 @@ describe('UsersService', () => {
 
   it('should update some user properties', async () => {
     updateUserInput._id = userId;
-    const updatedUser = await service.update(
-      updateUserInput._id,
-      updateUserInput,
-    );
+    const updatedUser = await service.update(updateUserInput._id, updateUserInput);
     expect(updatedUser.id).toBe(userId);
     expect(updatedUser.firstName).toBe(updateUserInput.firstName);
     expect(updatedUser.firstName).not.toBe(createUserInput.firstName);

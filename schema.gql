@@ -165,7 +165,7 @@ input Address {
   street: String!
   city: String!
   state: String!
-  zip: Float!
+  zip: String!
 }
 
 input UpdateUserInput {

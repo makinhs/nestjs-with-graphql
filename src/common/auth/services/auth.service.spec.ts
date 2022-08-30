@@ -33,10 +33,7 @@ describe('AuthService', () => {
             findOneByEmail: jest.fn(async (email) => {
               if (email) {
                 const saltOrRounds = 10;
-                const passwordHash = await bcrypt.hash(
-                  user.password,
-                  saltOrRounds,
-                );
+                const passwordHash = await bcrypt.hash(user.password, saltOrRounds);
                 return { ...user, password: passwordHash };
               } else {
                 return null;
