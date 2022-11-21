@@ -30,13 +30,13 @@ jobs:
       output1: ${{ steps.step1.outputs.test }}
     steps:
       - name: Get Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get yarn cache directory path
         run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
 
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.YARN_CACHE_DIR }}
           key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -59,14 +59,14 @@ jobs:
 
     steps:
       - name: Get Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get yarn cache directory path
         run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
 
       - name: Cache node modules
         id: yarn-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.YARN_CACHE_DIR }}
           key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -107,14 +107,14 @@ jobs:
           --health-retries 5
     steps:
       - name: Get Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get yarn cache directory path
         run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
 
       - name: Cache node modules
         id: yarn-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.YARN_CACHE_DIR }}
           key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
