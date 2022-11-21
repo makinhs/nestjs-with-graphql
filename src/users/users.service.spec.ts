@@ -9,6 +9,7 @@ import { ListUsersInput } from './dto/list-users.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { AuthService } from '../common/auth/services/auth.service';
 import { LoginUserInput } from './dto/login-user.input';
+import { Address, AddressSchema } from './entities/address.entity';
 
 const USER_ROLE = 'User';
 const chance = new Chance();
@@ -47,6 +48,10 @@ describe('UsersService', () => {
           {
             name: User.name,
             schema: UserSchema,
+          },
+          {
+            name: Address.name,
+            schema: AddressSchema,
           },
         ]),
       ],

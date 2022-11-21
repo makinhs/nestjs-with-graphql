@@ -8,6 +8,8 @@ export class OnlySameUserByIdAllowed implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const ctx = GqlExecutionContext.create(context);
     const { req } = ctx.getContext();
+    // PUT /users/:userId/email
+    // req.user.userId === params.userId
     const requestUserId = req.body?.variables[Object.keys(req.body?.variables)[0]]._id;
     try {
       if (req?.user.userId === requestUserId) {

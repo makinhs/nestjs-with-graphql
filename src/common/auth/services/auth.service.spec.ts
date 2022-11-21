@@ -16,6 +16,15 @@ const user: User = {
   lastName: chance.last(),
   password: chance.string({ length: 15 }),
   role: USER_ROLE,
+  addresses: [
+    {
+      _id: chance.fbid(),
+      street: chance.street(),
+      city: chance.city(),
+      state: chance.state(),
+      zip: chance.zip(),
+    },
+  ],
 };
 describe('AuthService', () => {
   let service: AuthService;

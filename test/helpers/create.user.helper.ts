@@ -23,6 +23,14 @@ export const generateCreateUserVariables = (role = userRole) => {
       email: chance.email(),
       password: chance.string({ length: 15 }),
       role: role,
+      addresses: [
+        {
+          street: chance.street(),
+          city: chance.city(),
+          state: chance.state(),
+          zip: chance.zip(),
+        },
+      ],
     },
   };
 };

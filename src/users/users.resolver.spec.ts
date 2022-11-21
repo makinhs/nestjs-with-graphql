@@ -16,6 +16,14 @@ const createUserInput: CreateUserInput = {
   email: chance.email(),
   password: chance.string({ length: 15 }),
   role: USER_ROLE,
+  addresses: [
+    {
+      street: chance.street(),
+      city: chance.city(),
+      state: chance.state(),
+      zip: chance.zip(),
+    },
+  ],
 };
 const userId = new mongoose.Types.ObjectId();
 const updateUserInput: UpdateUserInput = {
