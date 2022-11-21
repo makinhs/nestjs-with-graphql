@@ -1,0 +1,6 @@
+dist
+node_modules
+.gitignore
+.git
+.vscode
+.idea
