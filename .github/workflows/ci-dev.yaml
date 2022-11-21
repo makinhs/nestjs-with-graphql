@@ -2,14 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches-ignore:
-      - main
-      - master
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - closed
+    branches:
+      - dev
+      - 006-cicd
 
 env:
   IMAGE_TAG: ${{ github.sha }}
@@ -135,3 +130,18 @@ jobs:
 
       - name: 'Running e2e tests'
         run: yarn run test:e2e
+  deploy_dev:
+    name: Deploy app to dev
+    runs-on: ubuntu-latest
+    needs:
+      - setup-env
+      - test-e2e
+      - test-cov
+    environment: Development
+    steps:
+      - name: Login to DockerHub Registry
+        run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+      - name: Docker build and push
+        run: |
+          docker build -f ./apps/marcos-silva/Dockerfile -t makinhs/nest-graphql:latest .
+          docker push makinhs/nest-graphql:latest
