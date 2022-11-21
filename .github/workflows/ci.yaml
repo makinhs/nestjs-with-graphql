@@ -74,7 +74,7 @@ jobs:
             ${{ github.repository }}-${{ runner.os }}-yarn-
 
       - name: All Secrets to env
-        uses: Firenza/secrets-to-env@v1.1.0
+        uses: Firenza/secrets-to-env@v1.2.0
         with:
           secrets: ${{ toJSON(secrets) }}
 
@@ -127,7 +127,7 @@ jobs:
           timeout 20 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' mongo 27017
 
       - name: add .env variables
-        uses: Firenza/secrets-to-env@v1.1.0
+        uses: Firenza/secrets-to-env@v1.2.0
         with:
           secrets: ${{ toJSON(secrets) }}
 
