@@ -143,5 +143,5 @@ jobs:
         run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
       - name: Docker build and push
         run: |
-          docker build -f ./apps/marcos-silva/Dockerfile -t makinhs/nest-graphql:latest .
+          docker build -f -t makinhs/nest-graphql:latest .
           docker push makinhs/nest-graphql:latest
