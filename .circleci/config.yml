@@ -1,0 +1,137 @@
+version: 2.1
+
+executors:
+  nodejs:
+    docker:
+      - image: circleci/node:16
+
+.directory: &directory
+  working_directory: ~/workspace
+
+jobs:
+  checkout-code:
+    <<: *directory
+    docker:
+      - image: circleci/node:16
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - workspace
+
+  bundle-dependencies:
+    <<: *directory
+    docker:
+      - image: circleci/node:16
+    steps:
+      - attach_workspace:
+          at: ~/
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - workspace
+
+  run-lint:
+    <<: *directory
+    docker:
+      - image: circleci/node:16
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: 'Run yarn lint'
+          command: yarn lint
+
+  run-e2e:
+    <<: *directory
+    docker:
+      - image: circleci/node:16
+      - image: circleci/mongo:4.4.7-focal
+    steps:
+      - attach_workspace:
+          at: ~/
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+      - setup_remote_docker
+      - run:
+          name: Waiting for Mongo
+          command: dockerize -wait tcp://localhost:27017 -timeout 1m
+      - run:
+          name: 'Run E2E Tests'
+          command: yarn run test:e2e --maxWorkers=1
+
+  run-unit:
+    <<: *directory
+    docker:
+      - image: circleci/node:16
+    steps:
+      - attach_workspace:
+          at: ~/
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+      - setup_remote_docker
+      - run:
+          name: 'Run Unit Tests'
+          command: yarn run test --maxWorkers=1
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:16
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.14
+          docker_layer_caching: true
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: echo 'running'
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Build and push Docker image
+          command: |
+            docker build -t makinhs/nest-graphql:latest .
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push makinhs/nest-graphql:latest
+
+workflows:
+  version: 2.1
+  pipeline:
+    jobs:
+      - checkout-code
+      - bundle-dependencies:
+          requires:
+            - checkout-code
+      - run-lint:
+          requires:
+            - bundle-dependencies
+      - run-e2e:
+          requires:
+            - bundle-dependencies
+      - run-unit:
+          requires:
+            - bundle-dependencies
+      - build:
+          filters:
+            branches:
+              only:
+                - 006-cicd
