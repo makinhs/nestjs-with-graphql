@@ -47,6 +47,20 @@ jobs:
       - setup-env
     environment: Development
     steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+
+      - name: Get yarn cache directory path
+        run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        id: yarn-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.YARN_CACHE_DIR }}
+          key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ github.repository }}-${{ runner.os }}-yarn-
       - name: Login to DockerHub Registry
         run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
       - name: See Directory and files
