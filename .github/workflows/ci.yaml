@@ -22,7 +22,7 @@ jobs:
     name: Setup environment
     runs-on: ubuntu-20.04
     container:
-      image: node:14
+      image: node:16
     defaults:
       run:
         shell: bash
