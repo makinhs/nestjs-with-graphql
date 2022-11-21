@@ -16,7 +16,6 @@ jobs:
   setup-env:
     name: Setup environment
     runs-on: ubuntu-20.04
-    working-directory: ./app
     container:
       image: node:16
     defaults:
@@ -43,19 +42,16 @@ jobs:
         run: yarn install
   deploy_dev:
     name: Deploy app to dev
-    working-directory: ./app
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     needs:
       - setup-env
-    #      - test-e2e
-    #      - test-cov
     environment: Development
     steps:
       - name: Login to DockerHub Registry
         run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+      - name: See Directory and files
+        run: |
+          ls -la
       - name: Docker build and push
         run: |
           docker build -f ./Dockerfile -t makinhs/nest-graphql:latest .
