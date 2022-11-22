@@ -127,7 +127,7 @@ workflows:
       - run-e2e:
           requires:
             - bundle-dependencies
-      - run-unit:
+      - run-cov:
           requires:
             - bundle-dependencies
       - build:
