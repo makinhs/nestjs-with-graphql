@@ -1,10 +1,6 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches-ignore:
-      - main
-      - master
   pull_request:
     types:
       - opened
