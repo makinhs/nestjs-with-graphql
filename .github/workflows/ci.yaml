@@ -1,137 +1,137 @@
-#name: CI/CD Pipeline
-#
-#on:
-#  push:
-#    branches-ignore:
-#      - main
-#      - master
-#  pull_request:
-#    types:
-#      - opened
-#      - synchronize
-#      - closed
-#
-#env:
-#  IMAGE_TAG: ${{ github.sha }}
-#  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#  MONGODB_URL: mongodb://mongo:27017/medium-db
-#  JWT_SECRET: N4tS4f3!23
-#
-#jobs:
-#  setup-env:
-#    name: Setup environment
-#    runs-on: ubuntu-20.04
-#    container:
-#      image: node:16
-#    defaults:
-#      run:
-#        shell: bash
-#    outputs:
-#      output1: ${{ steps.step1.outputs.test }}
-#    steps:
-#      - name: Get Code
-#        uses: actions/checkout@v3
-#
-#      - name: Get yarn cache directory path
-#        run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
-#
-#      - name: Cache node modules
-#        uses: actions/cache@v3
-#        with:
-#          path: ${{ env.YARN_CACHE_DIR }}
-#          key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#          restore-keys: |
-#            ${{ github.repository }}-${{ runner.os }}-yarn-
-#
-#      - name: Install node dependencies to populate cache
-#        run: yarn install
-#  test-cov:
-#    name: Running test coverage
-#    needs: setup-env
-#    environment: Testing
-#    runs-on: ubuntu-20.04
-#    container:
-#      image: node:14
-#    defaults:
-#      run:
-#        shell: bash
-#
-#    steps:
-#      - name: Get Code
-#        uses: actions/checkout@v3
-#
-#      - name: Get yarn cache directory path
-#        run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
-#
-#      - name: Cache node modules
-#        id: yarn-cache
-#        uses: actions/cache@v3
-#        with:
-#          path: ${{ env.YARN_CACHE_DIR }}
-#          key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#          restore-keys: |
-#            ${{ github.repository }}-${{ runner.os }}-yarn-
-#
-#      - name: All Secrets to env
-#        uses: Firenza/secrets-to-env@v1.2.0
-#        with:
-#          secrets: ${{ toJSON(secrets) }}
-#
-#      - name: Install node dependencies
-#        run: yarn install --frozen-lockfile
-#
-#      - name: 'Running test coverage'
-#        run: |
-#          yarn run test:cov
-#
-#  test-e2e:
-#    name: Running e2e tests
-#    needs: setup-env
-#    environment: Testing
-#    runs-on: ubuntu-20.04
-#    container:
-#      image: node:14
-#    defaults:
-#      run:
-#        shell: bash
-#    services:
-#      mongo:
-#        image: mongo:4.4.7
-#        ports:
-#          - 27017:27017
-#        options: >-
-#          --health-cmd mongo
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
-#    steps:
-#      - name: Get Code
-#        uses: actions/checkout@v3
-#
-#      - name: Get yarn cache directory path
-#        run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
-#
-#      - name: Cache node modules
-#        id: yarn-cache
-#        uses: actions/cache@v3
-#        with:
-#          path: ${{ env.YARN_CACHE_DIR }}
-#          key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#          restore-keys: |
-#            ${{ github.repository }}-${{ runner.os }}-yarn-
-#
-#      - name: Check Service Availability
-#        run: |
-#          DEBIAN_FRONTEND=noninteractive apt-get update && apt-get -y install netcat-openbsd
-#          timeout 20 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' mongo 27017
-#
-#      - name: add .env variables
-#        uses: Firenza/secrets-to-env@v1.2.0
-#        with:
-#          secrets: ${{ toJSON(secrets) }}
-#
-#      - name: Install node dependencies
-#        run: yarn install
-#
-#      - name: 'Running e2e tests'
-#        run: yarn run test:e2e
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - closed
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MONGODB_URL: mongodb://mongo:27017/medium-db
+  JWT_SECRET: N4tS4f3!23
+
+jobs:
+  setup-env:
+    name: Setup environment
+    runs-on: ubuntu-20.04
+    container:
+      image: node:16
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      output1: ${{ steps.step1.outputs.test }}
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+
+      - name: Get yarn cache directory path
+        run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.YARN_CACHE_DIR }}
+          key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ github.repository }}-${{ runner.os }}-yarn-
+
+      - name: Install node dependencies to populate cache
+        run: yarn install
+  test-cov:
+    name: Running test coverage
+    needs: setup-env
+    environment: Testing
+    runs-on: ubuntu-20.04
+    container:
+      image: node:16
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+
+      - name: Get yarn cache directory path
+        run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        id: yarn-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.YARN_CACHE_DIR }}
+          key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ github.repository }}-${{ runner.os }}-yarn-
+
+      - name: All Secrets to env
+        uses: Firenza/secrets-to-env@v1.2.0
+        with:
+          secrets: ${{ toJSON(secrets) }}
+
+      - name: Install node dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 'Running test coverage'
+        run: |
+          yarn run test:cov
+
+  test-e2e:
+    name: Running e2e tests
+    needs: setup-env
+    environment: Testing
+    runs-on: ubuntu-20.04
+    container:
+      image: node:16
+    defaults:
+      run:
+        shell: bash
+    services:
+      mongo:
+        image: mongo:4.4.7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd mongo
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+
+      - name: Get yarn cache directory path
+        run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+
+      - name: Cache node modules
+        id: yarn-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.YARN_CACHE_DIR }}
+          key: ${{ github.repository }}-${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ github.repository }}-${{ runner.os }}-yarn-
+
+      - name: Check Service Availability
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt-get update && apt-get -y install netcat-openbsd
+          timeout 20 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' mongo 27017
+
+      - name: add .env variables
+        uses: Firenza/secrets-to-env@v1.2.0
+        with:
+          secrets: ${{ toJSON(secrets) }}
+
+      - name: Install node dependencies
+        run: yarn install
+
+      - name: 'Running e2e tests'
+        run: yarn run test:e2e
