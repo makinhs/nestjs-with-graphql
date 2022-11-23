@@ -9,7 +9,7 @@ jobs:
   dev_build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Get branch name
@@ -40,7 +40,7 @@ jobs:
           ECR_REPOSITORY: my-graphql-app
           IMAGE_TAG: dev-${{ steps.vars.outputs.sha_short }}
         run: |
-          docker build -f ./Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -f ./Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       - name: Replace yaml string
         run: |
