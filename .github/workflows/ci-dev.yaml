@@ -51,4 +51,4 @@ jobs:
         with:
           command: 'apply -f ./infra/dev.yaml'
         env:
-          EKS_CLUSTER: yoy-b2c-b2b
+          EKS_CLUSTER: eks-sample
