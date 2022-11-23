@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-amazing-app-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-amazing-app-dev
+  template:
+    metadata:
+      labels:
+        app: my-amazing-app-dev
+    spec:
+      imagePullSecrets:
+        - name: awsecr-cred
+      containers:
+        - name: my-amazing-app-dev
+          image: 098525300248.dkr.ecr.us-east-1.amazonaws.com/my-graphql-app:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: my-amazing-app-dev-secrets
+          imagePullPolicy: Always
+
+# ... Service YAML definition
+---
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-amazing-app-dev
+spec:
+  selector:
+    app: my-amazing-app-dev
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: LoadBalancer
