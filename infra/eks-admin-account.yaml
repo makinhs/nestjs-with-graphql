@@ -1,3 +1,6 @@
+# ... This allows you to see the dashboard with a secret token
+# secret token can be extracted with:
+#  kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep eks-admin | awk '{print $1}')
 apiVersion: v1
 kind: ServiceAccount
 metadata:
