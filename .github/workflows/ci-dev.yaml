@@ -44,7 +44,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       - name: Replace yaml string
         run: |
-          sed -i 's/__REPLACE_TAG_IMAGE__/dev-${{ steps.vars.outputs.sha_short }}/g' ./infra/dev/dev-api.yaml
+          sed -i 's/__REPLACE_TAG_IMAGE__/dev-${{ steps.vars.outputs.sha_short }}/g' ./infra/dev.yaml
 
       - name: Run kubectl dev
         uses: nikosch86/github-action-eks-kubectl@main
