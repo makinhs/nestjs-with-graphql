@@ -1,0 +1,53 @@
+name: DEV deploy
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  dev_build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+        id: extract_branch
+      - name: Declare some variables
+        id: vars
+        shell: bash
+        run: |
+          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: toptal-api
+          IMAGE_TAG: staging-${{ steps.vars.outputs.sha_short }}
+        run: |
+          docker build -f ./Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Replace yaml string
+        run: |
+          sed -i 's/__REPLACE_TAG_IMAGE__/staging-${{ steps.vars.outputs.sha_short }}/g' ./infra/dev.yaml
+
+      - name: Run kubectl dev
+        uses: nikosch86/github-action-eks-kubectl@main
+        with:
+          command: 'apply -f ./infra/staging.yaml'
+        env:
+          EKS_CLUSTER: eks-toptal
