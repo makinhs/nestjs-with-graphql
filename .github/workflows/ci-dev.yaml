@@ -14,7 +14,7 @@ jobs:
           fetch-depth: 0
       - name: Get branch name
         id: branch-name
-        uses: tj-actions/branch-names@v5.2
+        uses: tj-actions/branch-names@v6
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -26,17 +26,14 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: Extract branch name
         shell: bash
-        #        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
-        #        run: echo "branch=$(echo '${GITHUB_REF#refs/heads/}'" >> $GITHUB_OUTPUT
-
         id: extract_branch
       - name: Declare some variables
         id: vars
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
