@@ -16,7 +16,7 @@ spec:
         - name: awsecr-cred
       containers:
         - name: my-amazing-app-dev
-          image: 098525300248.dkr.ecr.us-east-1.amazonaws.com/my-graphql-app:__REPLACE_TAG_IMAGE__
+          image: 098525300248.dkr.ecr.us-east-1.amazonaws.com/toptal-api:__REPLACE_TAG_IMAGE__
           ports:
             - containerPort: 3000
           envFrom:
