@@ -1,11 +1,11 @@
-name: DEV deploy
+name: STAGING deploy
 on:
   push:
     branches:
       - staging
 
 jobs:
-  dev_build_and_deploy:
+  staging_build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
