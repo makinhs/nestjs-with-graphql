@@ -68,5 +68,5 @@ jobs:
           ls -la
       - name: Docker build and push
         run: |
-          docker build -f ./Dockerfile -t makinhs/nest-graphql:latest .
+          docker build -f ./Dockerfile -t makinhs/nest-graphql:${{ github.sha }} .
           docker push makinhs/nest-graphql:latest
