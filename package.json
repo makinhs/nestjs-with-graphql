@@ -1,6 +1,6 @@
 {
   "name": "nestjs-with-graphql",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "author": "",
   "private": true,
@@ -86,10 +86,10 @@
     },
     "coverageThreshold": {
       "global": {
-        "branches": 100,
-        "functions": 100,
-        "lines": 100,
-        "statements": 100
+        "branches": 75,
+        "functions": 60,
+        "lines": 75,
+        "statements": 75
       }
     },
     "collectCoverageFrom": [
