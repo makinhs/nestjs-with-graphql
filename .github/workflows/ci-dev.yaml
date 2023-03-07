@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - dev
-      - 006-cicd
+      - dev-demo
 
 env:
   IMAGE_TAG: ${{ github.sha }}
